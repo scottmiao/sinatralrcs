@@ -22,11 +22,17 @@ def contact(title=TITLE):
     return render_template('contact.html', title=title)
 
 
-# Listing Songs
+# listing songs
 @app.route('/songs')
 def show_songs(title=TITLE):
     songs = Song.query.all()
     return render_template('songs.html', songs=songs, title=title)
+
+# showing a song
+@app.route('/songs/<int:song_id>')
+def show_a_song(song_id, title=TITLE):
+    song = Song.query.filter(Song.id == song_id).first()
+    return render_template('show_song.html', song=song, title=title)
 
 
 @app.errorhandler(404)
