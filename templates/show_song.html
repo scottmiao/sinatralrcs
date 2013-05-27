@@ -9,7 +9,7 @@
 <pre>{{ song.lyrics }}</pre>
 <p><a href="/songs">back to songs index</a></p>
 <p><a href="/songs/{{ song.id }}/edit">edit this song</a></p>
-<form action="/songs/{{ song.id }}" method="POST">
+<form action="/songs/{{ song.id }}/delete" method="POST">
     <input type="hidden" name="_method" value="DELETE">
     <input type="submit" value="delete this song">
 </form>

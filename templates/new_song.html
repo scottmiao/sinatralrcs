@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h1>Add A New Song</h1>
+<form method="POST" action="{{ url_for('new_song') }}"  >
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title">
+    <label for="length">Length:</label>
+    <input type="number" id="length" name="length">
+    <label for="released_on">Date(mm/dd/yyyy):</label>
+    <input type="text" id="released_on" name="released_on">
+    <label for="lyrics">Lyrics</label>
+    <textarea name="lyrics" id="lyrics" cols="30" rows="10"></textarea>
+    <br>
+    <input type="submit" value="Save Song">
+</form>
+
+{% endblock %}
