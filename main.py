@@ -4,8 +4,12 @@ from models import Song, db
 from datetime import date
 
 
-app = Flask(__name__)
 TITLE = 'Songs By Sinatra'
+SECRET_KEY = 'development key'
+USERNAME = 'frank'
+PASSWORD = 'sinatra'
+app = Flask(__name__)
+app.config.from_object(__name__)
 
 
 @app.route('/')
@@ -40,6 +44,8 @@ def show_a_song(song_id, title=TITLE):
 # add a new song
 @app.route('/songs/new', methods=['GET', 'POST'])
 def new_song(title=TITLE):
+    if not session.get('logged_in'):
+        abort(401)
     if request.method == 'POST':
         lst = (request.form['released_on']).split('/')
         released_on = date(int(lst[2]), int(lst[0]), int(lst[1]))
@@ -49,6 +55,7 @@ def new_song(title=TITLE):
                     released_on)
         db.session.add(song)
         db.session.commit()
+        flash('Song succsessfully added')
         return redirect(url_for('show_songs'))
     else:
         return render_template('new_song.html', title=title)
@@ -57,15 +64,20 @@ def new_song(title=TITLE):
 # delete a song
 @app.route('/songs/<int:song_id>/delete', methods=['POST', 'DELETE'])
 def delete_song(song_id, title=TITLE):
+    if not session.get('logged_in'):
+        abort(401)
     song = Song.query.filter(Song.id == song_id).first()
     db.session.delete(song)
     db.session.commit()
+    flash('Song succsessfully deleted')
     return redirect(url_for('show_songs'))
 
 
 # edit and update a song
 @app.route('/songs/<int:song_id>/edit', methods=['GET', 'POST', 'PUT'])
 def edit_song(song_id, title=TITLE):
+    if not session.get('logged_in'):
+        abort(401)
     song = Song.query.filter(Song.id == song_id).first()
     if request.method == 'GET':
         return render_template('edit_song.html', song=song, title=title)
@@ -75,7 +87,32 @@ def edit_song(song_id, title=TITLE):
     lst = (request.form['released_on']).split('/')
     song.released_on = date(int(lst[2]), int(lst[0]), int(lst[1]))
     db.session.commit()
+    flash('Song succsessfully updated')
     return redirect(url_for('show_songs'))
+
+
+# admin login
+@app.route('/login', methods=['GET', 'POST'])
+def login(title=TITLE):
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME']:
+            error = 'Invalid username'
+        elif request.form['password'] != app.config['PASSWORD']:
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('show_songs'))
+    return render_template('login.html', error=error, title=title)
+
+
+# admin logout
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('login'))
 
 
 @app.errorhandler(404)
