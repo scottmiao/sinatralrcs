@@ -42,7 +42,7 @@ def show_a_song(song_id, title=TITLE):
 def new_song(title=TITLE):
     if request.method == 'POST':
         lst = (request.form['released_on']).split('/')
-        released_on = date(int(lst[2]), int(lst[1]), int(lst[0]))
+        released_on = date(int(lst[2]), int(lst[0]), int(lst[1]))
         song = Song(request.form['title'],
                     request.form['lyrics'],
                     request.form['length'],
@@ -64,10 +64,18 @@ def delete_song(song_id, title=TITLE):
 
 
 # edit and update a song
-@app.route('/songs/<int:song_id>/edit')
+@app.route('/songs/<int:song_id>/edit', methods=['GET', 'POST', 'PUT'])
 def edit_song(song_id, title=TITLE):
     song = Song.query.filter(Song.id == song_id).first()
-    return render_template('edit_song.html', song=song, title=title)
+    if request.method == 'GET':
+        return render_template('edit_song.html', song=song, title=title)
+    song.title = request.form['title']
+    song.lyrics = request.form['lyrics']
+    song.length = request.form['length']
+    lst = (request.form['released_on']).split('/')
+    song.released_on = date(int(lst[2]), int(lst[0]), int(lst[1]))
+    db.session.commit()
+    return redirect(url_for('show_songs'))
 
 
 @app.errorhandler(404)
