@@ -2,14 +2,22 @@ from flask import Flask, request, session, redirect, url_for, \
     abort, render_template, flash
 from models import Song, db
 from datetime import date
+from flask_mail import Mail
+from flask_mail import Message
 
 
 TITLE = 'Songs By Sinatra'
 SECRET_KEY = 'development key'
 USERNAME = 'frank'
 PASSWORD = 'sinatra'
+MAIL_SERVER = 'smtp.163.com'
+MAIL_PORT = 994
+MAIL_USE_SSL = True
+MAIL_USERNAME = 'jazzymiao'
+MAIL_PASSWORD = '********'
 app = Flask(__name__)
 app.config.from_object(__name__)
+mail = Mail(app)
 
 
 @app.route('/')
@@ -22,9 +30,23 @@ def about(title='All About This Website'):
     return render_template('about.html', title=title)
 
 
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact(title=TITLE):
-    return render_template('contact.html', title=title)
+    if request.method == 'GET':
+        return render_template('contact.html', title=title)
+    send_message()
+    flash('Thank you for your message. We\'ll be in touch soon.')
+    return redirect(url_for('show_songs'))
+
+
+# email helper for '/contact'
+def send_message():
+    msg = Message('A message frome ' + request.form['name'] + ': '
+                  + request.form['email'],
+                  sender="jazzymiao@163.com",
+                  recipients=["jazzymiao@163.com"])
+    msg.body = request.form['message']
+    mail.send(msg)
 
 
 # listing songs
