@@ -22,18 +22,18 @@ mail = Mail(app)
 
 @app.route('/')
 def home(title=TITLE):
-    return render_template('home.html', title=title)
+    return render_template('home.html', title=title, is_home_current=is_current())
 
 
 @app.route('/about')
 def about(title='All About This Website'):
-    return render_template('about.html', title=title)
+    return render_template('about.html', title=title, is_about_current=is_current('/about'))
 
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact(title=TITLE):
     if request.method == 'GET':
-        return render_template('contact.html', title=title)
+        return render_template('contact.html', title=title, is_contact_current=is_current('/contact'))
     send_message()
     flash('Thank you for your message. We\'ll be in touch soon.')
     return redirect(url_for('show_songs'))
@@ -53,7 +53,7 @@ def send_message():
 @app.route('/songs')
 def show_songs(title=TITLE):
     songs = Song.query.all()
-    return render_template('songs.html', songs=songs, title=title)
+    return render_template('songs.html', songs=songs, title=title, is_songs_current=is_current('/songs'))
 
 
 # showing a song
@@ -140,6 +140,11 @@ def logout():
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('not_found.html'), 404
+
+
+def is_current(path='/'):
+    return 'current' if request.path == path or request.path == path + '/' \
+        else None
 
 
 if __name__ == '__main__':

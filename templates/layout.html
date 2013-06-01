@@ -10,15 +10,14 @@
         <h1>{{ title }}</h1>
         <nav>
             <ul>
-                <li><a href="/" title="Home">Home</a></li>
-                <li><a href="/about" title="About">About</a></li>
-                <li><a href="/contact" title="Contact">Contact</a></li>
-                <li><a href="/songs" title="Songs">Songs</a></li>
+                <li><a href="/" title="Home" class="{{ is_home_current }}">Home</a></li>
+                <li><a href="/about" title="About" class="{{ is_about_current }}">About</a></li>
+                <li><a href="/contact" title="Contact" class="{{ is_contact_current }}">Contact</a></li>
+                <li><a href="/songs" title="Songs" class="{{ is_songs_current }}">Songs</a></li>
             </ul>
         </nav>
     </header>
     <section>
-    </div>
     {% for message in get_flashed_messages() %}
     <div class=flash>{{ message }}</div>
     {% endfor %}
