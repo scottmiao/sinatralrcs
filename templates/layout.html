@@ -10,10 +10,10 @@
         <h1>{{ title }}</h1>
         <nav>
             <ul>
-                <li><a href="/" title="Home" class="{{ is_home_current }}">Home</a></li>
-                <li><a href="/about" title="About" class="{{ is_about_current }}">About</a></li>
-                <li><a href="/contact" title="Contact" class="{{ is_contact_current }}">Contact</a></li>
-                <li><a href="/songs" title="Songs" class="{{ is_songs_current }}">Songs</a></li>
+                <li><a href="/" title="Home" class="{{ is_current() }}">Home</a></li>
+                <li><a href="/about" title="About" class="{{ is_current('/about') }}">About</a></li>
+                <li><a href="/contact" title="Contact" class="{{ is_current('/contact') }}">Contact</a></li>
+                <li><a href="/songs" title="Songs" class="{{ is_current('/songs') }}">Songs</a></li>
             </ul>
         </nav>
     </header>
