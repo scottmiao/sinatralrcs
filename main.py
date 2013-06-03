@@ -137,6 +137,14 @@ def logout():
     return redirect(url_for('login'))
 
 
+@app.route('/songs/<int:song_id>/like', methods=['POST'])
+def like(song_id):
+    song = Song.query.filter(Song.id == song_id).first()
+    song.likes = song.likes + 1
+    db.session.commit()
+    return redirect("/songs/" + str(song.id))
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('not_found.html'), 404

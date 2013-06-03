@@ -12,6 +12,7 @@ class Song(db.Model):
     lyrics = db.Column(db.Text)
     length = db.Column(db.Integer)
     released_on = db.Column(db.DateTime)
+    likes = db.Column(db.Integer, default=0)
 
     def __init__(self, title, lyrics, length, released_on):
         self.title = title

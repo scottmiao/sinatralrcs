@@ -52,7 +52,7 @@ nav a.current {
   font-weight: bold;
   color: #990033; }
 #like input {
-  background: #990033 url(/images/like.png) 0 2px no-repeat;
+  background: #990033 url(/static/images/like.png) 0 2px no-repeat;
   border: #660022 1px solid;
   height: 28px;
   padding-left: 24px; }
