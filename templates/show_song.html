@@ -8,17 +8,8 @@
 <p>Length: {{ song.length/60 }} minutes {{ song.length%60 }} seconds</p>
 <pre>{{ song.lyrics }}</pre>
 
-<!-- TODO: Put this div into a partial template. -->
 <div id="like">
-    {% if song.likes == 0 %}
-    <p>Nobody has liked this song so far!</p>
-    {% endif %}
-    {% if song.likes == 1 %}
-    <p>This song has been liked once!</p>
-    {% endif %}
-    {% if song.likes > 1 %}
-    <p>This song has been liked {{ song.likes }} times</p>
-    {% endif %}
+    {% include "like.html" %}
     <form action="/songs/{{ song.id }}/like" method="POST">
         <input type="submit" value="like">
     </form>

@@ -137,12 +137,23 @@ def logout():
     return redirect(url_for('login'))
 
 
+# @app.route('/songs/<int:song_id>/like', methods=['POST'])
+# def like(song_id):
+#     song = Song.query.filter(Song.id == song_id).first()
+#     song.likes = song.likes + 1
+#     db.session.commit()
+#     return redirect("/songs/" + str(song.id))
+
+
+# Ajax edition
 @app.route('/songs/<int:song_id>/like', methods=['POST'])
 def like(song_id):
     song = Song.query.filter(Song.id == song_id).first()
     song.likes = song.likes + 1
     db.session.commit()
-    return redirect("/songs/" + str(song.id))
+    if not request.is_xhr:
+        return redirect("/songs/" + str(song.id))
+    return render_template('like.html', song=song)
 
 
 @app.errorhandler(404)
