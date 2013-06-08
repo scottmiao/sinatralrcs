@@ -14,11 +14,11 @@ class Song(db.Model):
     released_on = db.Column(db.DateTime)
     likes = db.Column(db.Integer, default=0)
 
-    def __init__(self, title, lyrics, length, released_on):
-        self.title = title
-        self.lyrics = lyrics
-        self.length = length
-        self.released_on = released_on
+    # def __init__(self, title, lyrics, length, released_on):
+    #     self.title = title
+    #     self.lyrics = lyrics
+    #     self.length = length
+    #     self.released_on = released_on
 
     def __repr__(self):
         return '<Song [%r] [%r] [%r] [%r]>' % (self.title,

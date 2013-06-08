@@ -1,5 +1,9 @@
 from flask import Flask, request, session, redirect, url_for, \
     abort, render_template, flash
+from flask.ext.wtf import (Form, TextField, TextAreaField,
+                           PasswordField, SubmitField,
+                           Required, ValidationError,
+                           IntegerField, DateTimeField)
 from models import Song, db
 from datetime import date
 from flask_mail import Mail
@@ -18,6 +22,14 @@ MAIL_PASSWORD = '********'
 app = Flask(__name__)
 app.config.from_object(__name__)
 mail = Mail(app)
+
+
+class SongForm(Form):
+
+    title = TextField("Title", validators=[Required()])
+    lyrics = TextAreaField("Lyrics")
+    length = IntegerField("Lenth")
+    released_on = DateTimeField("Released on", format='%m/%d/%Y')
 
 
 @app.route('/')
@@ -68,19 +80,21 @@ def show_a_song(song_id, title=TITLE):
 def new_song(title=TITLE):
     if not session.get('logged_in'):
         abort(401)
+
+    form = SongForm()
+
     if request.method == 'POST':
-        lst = (request.form['released_on']).split('/')
-        released_on = date(int(lst[2]), int(lst[0]), int(lst[1]))
-        song = Song(request.form['title'],
-                    request.form['lyrics'],
-                    request.form['length'],
-                    released_on)
-        db.session.add(song)
-        db.session.commit()
-        flash('Song succsessfully added')
-        return redirect(url_for('show_songs'))
+        if form.validate():
+            song = Song()
+            form.populate_obj(song)
+            db.session.add(song)
+            db.session.commit()
+            flash('Song succsessfully added')
+            return redirect(url_for('show_songs'))
+        else:
+            flash("Your form contained errors")
     else:
-        return render_template('new_song.html', title=title)
+        return render_template('new_song.html', form=form, title=title)
 
 
 # delete a song
@@ -100,17 +114,19 @@ def delete_song(song_id, title=TITLE):
 def edit_song(song_id, title=TITLE):
     if not session.get('logged_in'):
         abort(401)
+    form = SongForm()
     song = Song.query.filter(Song.id == song_id).first()
     if request.method == 'GET':
-        return render_template('edit_song.html', song=song, title=title)
-    song.title = request.form['title']
-    song.lyrics = request.form['lyrics']
-    song.length = request.form['length']
-    lst = (request.form['released_on']).split('/')
-    song.released_on = date(int(lst[2]), int(lst[0]), int(lst[1]))
-    db.session.commit()
-    flash('Song succsessfully updated')
-    return redirect(url_for('show_songs'))
+        return render_template('edit_song.html', form=form, song=song, title=title)
+    # request.method == 'POST' or 'PUT'
+    if form.validate():
+        form.populate_obj(song)
+        db.session.commit()
+        flash('Song succsessfully updated')
+        return redirect(url_for('show_songs'))
+    else:
+        flash("Your form contained errors")
+        return redirect("/songs/" + str(song.id) + "/edit")
 
 
 # admin login
