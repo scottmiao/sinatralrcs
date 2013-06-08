@@ -5,7 +5,7 @@
 {% if song.released_on %}
 <p>Release Date: {{ song.released_on.strftime("%A %d. %B %Y") }}</p>
 {% endif %}
-<p>Length: {{ song.length/60 }} minutes {{ song.length%60 }} seconds</p>
+<p>Length: {{ song.length//60 }} minutes {{ song.length%60 }} seconds</p>
 <pre>{{ song.lyrics }}</pre>
 
 <div id="like">

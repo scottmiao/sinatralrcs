@@ -115,8 +115,10 @@ def delete_song(song_id, title=TITLE):
 def edit_song(song_id, title=TITLE):
     if not session.get('logged_in'):
         abort(401)
-    form = SongForm()
+
     song = Song.query.filter(Song.id == song_id).first()
+    form = SongForm(obj=song)
+
     if request.method == 'GET':
         return render_template('edit_song.html', form=form, song=song, title=title)
     # request.method == 'POST' or 'PUT'
@@ -124,7 +126,7 @@ def edit_song(song_id, title=TITLE):
         form.populate_obj(song)
         db.session.commit()
         flash('Song succsessfully updated')
-        return redirect(url_for('show_songs'))
+        return render_template('show_song.html', song=song, title=title)
     else:
         flash("Your form contained errors")
         return redirect("/songs/" + str(song.id) + "/edit")
