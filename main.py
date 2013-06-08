@@ -93,6 +93,7 @@ def new_song(title=TITLE):
             return redirect(url_for('show_songs'))
         else:
             flash("Your form contained errors")
+            return render_template('new_song.html', form=form, title=title)
     else:
         return render_template('new_song.html', form=form, title=title)
 
