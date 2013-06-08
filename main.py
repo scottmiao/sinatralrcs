@@ -71,7 +71,7 @@ def show_songs(title=TITLE):
 # showing a song
 @app.route('/songs/<int:song_id>')
 def show_a_song(song_id, title=TITLE):
-    song = Song.query.filter(Song.id == song_id).first()
+    song = Song.query.get(song_id)
     return render_template('show_song.html', song=song, title=title)
 
 
@@ -103,7 +103,8 @@ def new_song(title=TITLE):
 def delete_song(song_id, title=TITLE):
     if not session.get('logged_in'):
         abort(401)
-    song = Song.query.filter(Song.id == song_id).first()
+
+    song = Song.query.get(song_id)
     db.session.delete(song)
     db.session.commit()
     flash('Song succsessfully deleted')
@@ -116,7 +117,7 @@ def edit_song(song_id, title=TITLE):
     if not session.get('logged_in'):
         abort(401)
 
-    song = Song.query.filter(Song.id == song_id).first()
+    song = Song.query.get(song_id)
     form = SongForm(obj=song)
 
     if request.method == 'GET':
@@ -167,7 +168,7 @@ def logout():
 # Ajax edition
 @app.route('/songs/<int:song_id>/like', methods=['POST'])
 def like(song_id):
-    song = Song.query.filter(Song.id == song_id).first()
+    song = Song.query.get(song_id)
     song.likes = song.likes + 1
     db.session.commit()
     if not request.is_xhr:
