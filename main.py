@@ -9,8 +9,9 @@ from datetime import date
 from flask_mail import Mail
 from flask_mail import Message
 
+from helpers import is_current, set_title
 
-TITLE = 'Songs By Sinatra'
+
 SECRET_KEY = 'development key'
 USERNAME = 'frank'
 PASSWORD = 'sinatra'
@@ -33,19 +34,19 @@ class SongForm(Form):
 
 
 @app.route('/')
-def home(title=TITLE):
-    return render_template('home.html', title=title)
+def home():
+    return render_template('home.html')
 
 
 @app.route('/about')
 def about(title='All About This Website'):
-    return render_template('about.html', title=title)
+    return render_template('about.html')
 
 
 @app.route('/contact', methods=['GET', 'POST'])
-def contact(title=TITLE):
+def contact():
     if request.method == 'GET':
-        return render_template('contact.html', title=title)
+        return render_template('contact.html')
     send_message()
     flash('Thank you for your message. We\'ll be in touch soon.')
     return redirect(url_for('show_songs'))
@@ -63,21 +64,21 @@ def send_message():
 
 # listing songs
 @app.route('/songs')
-def show_songs(title=TITLE):
+def show_songs():
     songs = Song.query.all()
-    return render_template('songs.html', songs=songs, title=title)
+    return render_template('songs.html', songs=songs)
 
 
 # showing a song
 @app.route('/songs/<int:song_id>')
-def show_a_song(song_id, title=TITLE):
+def show_a_song(song_id):
     song = Song.query.get_or_404(song_id)
-    return render_template('show_song.html', song=song, title=title)
+    return render_template('show_song.html', song=song)
 
 
 # add a new song
 @app.route('/songs/new', methods=['GET', 'POST'])
-def new_song(title=TITLE):
+def new_song():
     if not session.get('logged_in'):
         abort(401)
 
@@ -93,14 +94,14 @@ def new_song(title=TITLE):
             return redirect(url_for('show_songs'))
         else:
             flash("Your form contained errors")
-            return render_template('new_song.html', form=form, title=title)
+            return render_template('new_song.html', form=form)
     else:
-        return render_template('new_song.html', form=form, title=title)
+        return render_template('new_song.html', form=form)
 
 
 # delete a song
 @app.route('/songs/<int:song_id>/delete', methods=['POST', 'DELETE'])
-def delete_song(song_id, title=TITLE):
+def delete_song(song_id):
     if not session.get('logged_in'):
         abort(401)
 
@@ -113,7 +114,7 @@ def delete_song(song_id, title=TITLE):
 
 # edit and update a song
 @app.route('/songs/<int:song_id>/edit', methods=['GET', 'POST', 'PUT'])
-def edit_song(song_id, title=TITLE):
+def edit_song(song_id):
     if not session.get('logged_in'):
         abort(401)
 
@@ -121,13 +122,13 @@ def edit_song(song_id, title=TITLE):
     form = SongForm(obj=song)
 
     if request.method == 'GET':
-        return render_template('edit_song.html', form=form, song=song, title=title)
+        return render_template('edit_song.html', form=form, song=song)
     # request.method == 'POST' or 'PUT'
     if form.validate():
         form.populate_obj(song)
         db.session.commit()
         flash('Song succsessfully updated')
-        return render_template('show_song.html', song=song, title=title)
+        return render_template('show_song.html', song=song)
     else:
         flash("Your form contained errors")
         return redirect("/songs/" + str(song.id) + "/edit")
@@ -135,7 +136,7 @@ def edit_song(song_id, title=TITLE):
 
 # admin login
 @app.route('/login', methods=['GET', 'POST'])
-def login(title=TITLE):
+def login():
     error = None
     if request.method == 'POST':
         if request.form['username'] != app.config['USERNAME']:
@@ -146,7 +147,7 @@ def login(title=TITLE):
             session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('show_songs'))
-    return render_template('login.html', error=error, title=title)
+    return render_template('login.html', error=error)
 
 
 # admin logout
@@ -181,13 +182,8 @@ def page_not_found(error):
     return render_template('not_found.html'), 404
 
 
-# helper for sytling the current page
-def is_current(path='/'):
-    return 'current' if request.path == path or request.path == path + '/' \
-        else ''
-
-
 app.jinja_env.globals.update(is_current=is_current)
+app.jinja_env.globals.update(set_title=set_title)
 
 if __name__ == '__main__':
     app.run(debug='True', host='0.0.0.0')

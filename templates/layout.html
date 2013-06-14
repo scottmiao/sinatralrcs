@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>{{ title }}</title>
+    <title>{{ set_title() }}</title>
     <meta charset="utf-8">
     <link rel="stylesheet" type=text/css href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
@@ -11,7 +11,7 @@
 </head>
 <body>
     <header>
-        <h1>{{ title }}</h1>
+        <h1>{{ set_title() }}</h1>
         <nav>
             <ul>
                 <li><a href="/" title="Home" class="{{ is_current() }}">Home</a></li>
